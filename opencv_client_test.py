@@ -12,6 +12,7 @@ buffSize = 65535
 server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # 创建socket对象
 server.bind(localaddr)
 print('now waiting for frames...')
+frame_number_receive = 1
 while True:
     data, address = server.recvfrom(buffSize)  # 先接收的是字节长度,此为第一步：接收server第一步发送的经过压缩编码的字节长度
     if len(data) == 1 and data[0] == 1:  # 如果收到关闭消息则停止程序
@@ -27,7 +28,8 @@ while True:
         continue
     data = numpy.array(bytearray(data))  # 格式转换
     imgdecode = cv2.imdecode(data, 1)  # 解码
-    print('have received one frame')
+    print('have received {} frame'.format(frame_number_receive))
+    frame_number_receive = frame_number_receive + 1
     cv2.imshow('frames', imgdecode)  # 窗口显示
     if cv2.waitKey(1) == 27:  # 按下“ESC”退出
         break
